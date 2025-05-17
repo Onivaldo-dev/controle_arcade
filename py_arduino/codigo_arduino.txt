@@ -1,0 +1,96 @@
+// Definição dos LEDs
+const byte LED1 = A5;
+const byte LED2 = A4;
+const byte LED3 = A3;
+const byte LED4 = A2;
+const byte LED5 = A1;
+const byte LED6 = A0;
+const byte LED7 = 13;
+const byte LED8 = 12;
+
+// Definição dos botões
+const byte BOTAO11 = 11;
+const byte BOTAO10 = 10;
+const byte BOTAO9 = 9;
+const byte BOTAO8 = 8;
+const byte BOTAO7 = 7;
+const byte BOTAO6 = 6;
+const byte BOTAO5 = 5;
+const byte BOTAO4 = 4;
+const byte BOTAO3 = 3;
+const byte BOTAO2 = 2;
+const byte BOTAO1 = 1;
+const byte BOTAO0 = 0;
+
+byte valorBotao[12]; // Array para armazenar os valores dos botões
+
+void setup() {
+  // Configura os LEDs como saída
+  pinMode(LED1, OUTPUT);
+  pinMode(LED2, OUTPUT);
+  pinMode(LED3, OUTPUT);
+  pinMode(LED4, OUTPUT);
+  pinMode(LED5, OUTPUT);
+  pinMode(LED6, OUTPUT);
+  pinMode(LED7, OUTPUT);
+  pinMode(LED8, OUTPUT);
+
+  // Configura os botões como entrada com pull-up
+  pinMode(BOTAO0, INPUT_PULLUP);
+  pinMode(BOTAO1, INPUT_PULLUP);
+  pinMode(BOTAO2, INPUT_PULLUP);
+  pinMode(BOTAO3, INPUT_PULLUP);
+  pinMode(BOTAO4, INPUT_PULLUP);
+  pinMode(BOTAO5, INPUT_PULLUP);
+  pinMode(BOTAO6, INPUT_PULLUP);
+  pinMode(BOTAO7, INPUT_PULLUP);
+  pinMode(BOTAO8, INPUT_PULLUP);
+  pinMode(BOTAO9, INPUT_PULLUP);
+  pinMode(BOTAO10, INPUT_PULLUP);
+  pinMode(BOTAO11, INPUT_PULLUP);
+
+  Serial.begin(9600);  // Inicia a comunicação serial
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    char comando = Serial.read();  // Lê o comando enviado pelo Python
+
+    if (comando == 'R') {
+      // Lê o estado de todos os botões e envia os estados ao Python
+      for (int i = 0; i < 12; i++) {
+        valorBotao[i] = digitalRead(i);  // Lê o estado do botão (0 ou 1)
+      }
+
+      // Envia os estados dos botões para o Python
+      String estados = "";
+      for (int i = 0; i < 12; i++) {
+        estados += String(valorBotao[i]);
+        if (i < 11) {
+          estados += ",";  // Adiciona a vírgula separadora
+        }
+      }
+      Serial.println(estados);  // Envia os estados para o Python
+    }
+
+    if (comando == 'S') {
+      // Lê o ID do LED e o valor (1 ou 0) para acionar ou desligar o LED
+      int led_id = Serial.parseInt();
+      int acionar = Serial.parseInt();
+
+      // Aciona ou desliga o LED correspondente
+      switch (led_id) {
+        case 7: digitalWrite(LED7, acionar); break;
+        case 8: digitalWrite(LED8, acionar); break;
+        case 1: digitalWrite(LED1, acionar); break;
+        case 2: digitalWrite(LED2, acionar); break;
+        case 3: digitalWrite(LED3, acionar); break;
+        case 4: digitalWrite(LED4, acionar); break;
+        case 5: digitalWrite(LED5, acionar); break;
+        case 6: digitalWrite(LED6, acionar); break;
+      }
+    }
+  }
+
+  delay(10);  // Delay para não sobrecarregar o Arduino
+}
